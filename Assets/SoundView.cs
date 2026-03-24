@@ -51,6 +51,11 @@ public class SoundView : MonoBehaviour
                 {
                     renderer.material.color = GetColor(value);
                 }
+                HairCellVibration vibration = sphere.GetComponent<HairCellVibration>();
+                if (vibration != null)
+                {
+                    vibration.SetStrength(value);
+                }
             }
         }
     }

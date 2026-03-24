@@ -546,6 +546,11 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!4 &441404231 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 9108576859123814733, guid: ff66340edabe5c64a93f84254e7cfc00, type: 3}
+  m_PrefabInstance: {fileID: 1538429628}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &726606934
 GameObject:
   m_ObjectHideFlags: 0
@@ -716,6 +721,21 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6357771548077669888, guid: 03d22a0be9a540e45b85d7cec6d95ae8, type: 3}
   m_PrefabInstance: {fileID: 1330774379}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &959425452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 959425444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c68b5c45bdd45142aac3b086ad5ec07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HairCellVibration
+  vibrationSpeed: 40
+  maxTilt: 20
+  currentStrength: 0
 --- !u!1001 &1330774379
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -770,9 +790,72 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6357771548077669888, guid: 03d22a0be9a540e45b85d7cec6d95ae8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 441404231}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2582497628625023625, guid: 03d22a0be9a540e45b85d7cec6d95ae8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 959425452}
+  m_SourcePrefab: {fileID: 100100000, guid: 03d22a0be9a540e45b85d7cec6d95ae8, type: 3}
+--- !u!1001 &1538429628
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 959425448}
+    m_Modifications:
+    - target: {fileID: 6851128136467784401, guid: ff66340edabe5c64a93f84254e7cfc00, type: 3}
+      propertyPath: m_Name
+      value: HairCell
+      objectReference: {fileID: 0}
+    - target: {fileID: 9108576859123814733, guid: ff66340edabe5c64a93f84254e7cfc00, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9108576859123814733, guid: ff66340edabe5c64a93f84254e7cfc00, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9108576859123814733, guid: ff66340edabe5c64a93f84254e7cfc00, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9108576859123814733, guid: ff66340edabe5c64a93f84254e7cfc00, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9108576859123814733, guid: ff66340edabe5c64a93f84254e7cfc00, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9108576859123814733, guid: ff66340edabe5c64a93f84254e7cfc00, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9108576859123814733, guid: ff66340edabe5c64a93f84254e7cfc00, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9108576859123814733, guid: ff66340edabe5c64a93f84254e7cfc00, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9108576859123814733, guid: ff66340edabe5c64a93f84254e7cfc00, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9108576859123814733, guid: ff66340edabe5c64a93f84254e7cfc00, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 03d22a0be9a540e45b85d7cec6d95ae8, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: ff66340edabe5c64a93f84254e7cfc00, type: 3}
 --- !u!1 &1955890854
 GameObject:
   m_ObjectHideFlags: 0
@@ -803,7 +886,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoundView
   model: {fileID: 190091604}
-  spherePrefab: {fileID: 959425444}
+  spherePrefab: {fileID: 6851128136467784401, guid: ff66340edabe5c64a93f84254e7cfc00, type: 3}
   cellSize: 1
   heightScale: 5
 --- !u!4 &1955890856
