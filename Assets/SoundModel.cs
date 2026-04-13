@@ -16,6 +16,8 @@ public class SoundModel : MonoBehaviour
     public float micSensitivity = 50f;
 
     public float currentLoudness;
+    public float smoothedLoudness;
+    public float smoothingSpeed = 8f;
 
     private AudioClip micClip;
     private string micName;
@@ -42,8 +44,9 @@ public class SoundModel : MonoBehaviour
     void Update()
     {
         currentLoudness = GetLoudness();
+        smoothedLoudness = Mathf.Lerp(smoothedLoudness, currentLoudness, Time.deltaTime * smoothingSpeed);
 
-        float value = Mathf.Clamp01(currentLoudness * micSensitivity);
+        float value = Mathf.Clamp01(smoothedLoudness * micSensitivity);
 
         for (int x = 0; x < width; x++)
         {
