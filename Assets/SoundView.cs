@@ -2,108 +2,119 @@
 
 public class SoundView : MonoBehaviour
 {
-    public SoundModel model;
-    public GameObject spherePrefab;
+    [Header("References")]
+    public SoundModel model;          // Reference to the sound data (contains noiseGrid, width, depth)
+    public GameObject hairPrefab;     // Prefab for each hair object
 
-    public float cellSize = 1f;
-    public float heightScale = 5f;
+    [Header("Layout")]
+    public float spacing = 0.5f;      // Distance between each hair in the grid
+    public float groundY = 0f;        // Y position of the ground
+    public float sinkIntoGround = 0.15f; // How much the hair is pushed into the ground
 
-    private GameObject[,] spheres;
+    [Header("Wave Flow")]
+    public float waveSpeed = 2.5f;    // Speed of the wave animation over time
+    public float waveSpacing = 0.45f; // Distance between wave peaks along the Z axis
+    public float waveMin = 0.35f;     // Minimum wave influence
+    public float waveMax = 1f;        // Maximum wave influence
+
+    [Header("Depth Response")]
+    public float frontRowMultiplier = 0.7f;  // Front hairs react less
+    public float backRowMultiplier = 1.25f;  // Back hairs react more
+
+    private GameObject[,] hairs; // 2D array storing all instantiated hairs
 
     void Start()
     {
+        // Check if model is assigned
         if (model == null)
         {
-            Debug.LogError("SoundView mangler Model reference.");
+            Debug.LogError("SoundView is missing Model reference.");
             return;
         }
 
-        if (spherePrefab == null)
+        // Check if prefab is assigned
+        if (hairPrefab == null)
         {
-            Debug.LogError("SoundView mangler Sphere Prefab.");
+            Debug.LogError("SoundView is missing Hair Prefab reference.");
             return;
         }
 
-        int width = model.width;
-        int depth = model.depth;
+        int width = model.width;   // Number of hairs in X direction
+        int depth = model.depth;   // Number of hairs in Z direction
 
-        spheres = new GameObject[width, depth];
+        hairs = new GameObject[width, depth]; // Initialize array
 
+        // Loop through grid and create hairs
         for (int x = 0; x < width; x++)
         {
             for (int z = 0; z < depth; z++)
             {
-                float spacing = 0.5f;
-
+                // Calculate position in X (centered grid)
                 float posX = (x - width / 2f) * spacing;
+
+                // Calculate position in Z (depth direction)
                 float posZ = z * spacing;
 
-                Vector3 pos = new Vector3(posX, 0, posZ);
+                // Final position with slight offset into ground
+                Vector3 pos = new Vector3(posX, groundY - sinkIntoGround, posZ);
 
-                GameObject sphere = Instantiate(spherePrefab, pos, Quaternion.identity, transform);
-                spheres[x, z] = sphere;
+                // Instantiate hair prefab and parent it to this object
+                GameObject hair = Instantiate(hairPrefab, pos, Quaternion.identity, transform);
+
+                // Store reference in array
+                hairs[x, z] = hair;
             }
         }
     }
 
     void Update()
     {
-        if (model == null || model.noiseGrid == null || spheres == null)
+        // Safety check to avoid errors
+        if (model == null || model.noiseGrid == null || hairs == null)
             return;
 
-        for (int x = 0; x < model.width; x++)
+        int width = model.width;
+        int depth = model.depth;
+
+        // Loop through all hairs
+        for (int x = 0; x < width; x++)
         {
-            for (int z = 0; z < model.depth; z++)
+            for (int z = 0; z < depth; z++)
             {
+                // Base sound value from noise grid (microphone input)
                 float baseValue = model.noiseGrid[x, z];
 
-                float rowFactor = Mathf.Lerp(0.6f, 1.2f, (float)z / (model.depth - 1));
+                // Depth-based scaling (back rows react more than front rows)
+                float rowFactor = Mathf.Lerp(frontRowMultiplier, backRowMultiplier, (float)z / (depth - 1));
 
-                float distance = Vector2.Distance(
-                    new Vector2(x, z),
-                    new Vector2(model.width / 2f, model.depth / 2f)
-                );
+                // Create a sine wave over time and depth
+                float wave = Mathf.Sin(Time.time * waveSpeed + z * waveSpacing);
 
-                float wave = Mathf.Sin(Time.time * 5f - distance * 0.5f);
+                // Convert wave from [-1,1] to [0,1]
+                float wave01 = (wave + 1f) * 0.5f;
 
-                float value = Mathf.Clamp01(baseValue * rowFactor * (0.5f + wave * 0.5f));
+                // Map wave into desired range
+                float waveFactor = Mathf.Lerp(waveMin, waveMax, wave01);
 
-                GameObject sphere = spheres[x, z];
-                if (sphere == null)
+                // Slight variation across X axis to avoid stiffness
+                float sideVariation = Mathf.Lerp(0.92f, 1.08f, (float)x / Mathf.Max(1, width - 1));
+
+                // Final strength value (clamped between 0 and 1)
+                float value = Mathf.Clamp01(baseValue * rowFactor * waveFactor * sideVariation);
+
+                GameObject hair = hairs[x, z];
+                if (hair == null)
                     continue;
 
-                Vector3 pos = sphere.transform.localPosition;
-                pos.y = value * heightScale;
-                sphere.transform.localPosition = pos;
+                // Get vibration script from hair
+                HairThreeSegmentVibration vibration = hair.GetComponent<HairThreeSegmentVibration>();
 
-                Renderer renderer = sphere.GetComponent<Renderer>();
-                if (renderer != null)
-                {
-                    renderer.material.color = GetColor(value);
-                }
-
-                HairCellVibration vibration = sphere.GetComponent<HairCellVibration>();
+                // Apply calculated strength to hair movement
                 if (vibration != null)
                 {
                     vibration.SetStrength(value);
                 }
             }
-        }
-    }
-
-    Color GetColor(float value)
-    {
-        if (value < 0.4f)
-        {
-            return Color.Lerp(new Color(0.4f, 0.8f, 1f), new Color(0.5f, 1f, 0.5f), value / 0.4f);
-        }
-        else if (value < 0.75f)
-        {
-            return Color.Lerp(new Color(0.5f, 1f, 0.5f), new Color(1f, 0.65f, 0.2f), (value - 0.4f) / 0.35f);
-        }
-        else
-        {
-            return Color.Lerp(new Color(1f, 0.65f, 0.2f), new Color(0.8f, 0.1f, 0.1f), (value - 0.75f) / 0.25f);
         }
     }
 }
